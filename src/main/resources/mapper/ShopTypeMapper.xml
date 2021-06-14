@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.t164.mapper.ShopTypeMapper">
+    <select id="list" resultType="com.t164.pojo.Shoptype">
+        select * from hsms_shoptype
+    </select>
+    <select id="findbyPage" resultType="com.t164.pojo.Shoptype">
+       SELECT type.*,(SELECT COUNT(1) FROM hsms_shop WHERE type.id=hsms_shop.`shop_type` ) as count,(SELECT name FROM hr_admin WHERE type.id=hr_admin.id) as name FROM hsms_shoptype `type`
+        limit #{offset},#{limit}
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        select count(1) from hsms_shoptype
+    </select>
+    <delete id="typeDel">
+        delete from hsms_shoptype where id in
+        <foreach collection="arry" open="(" close=")" separator="," item="id">
+            ${id}
+        </foreach>
+    </delete>
+
+    <insert id="typeadd">
+        insert  into hsms_shoptype(shoptype_name,update_id,shop_lastupdate) values (#{shoptype.shoptypeName},#{shoptype.updateId},NOW())
+    </insert>
+
+    <update id="typeupdate">
+        update hsms_shoptype set shoptype_name=#{shoptype.shoptypeName},update_id=#{shoptype.updateId},shop_lastupdate=NOW() where id=#{shoptype.id}
+    </update>
+</mapper>

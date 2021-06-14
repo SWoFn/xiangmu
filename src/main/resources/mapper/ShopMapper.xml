@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.t164.mapper.ShopMapper">
+    <resultMap id="shoptext" type="com.t164.pojo.Shop">
+        <id property="id" column="id"/>
+        <association property="wh" javaType="com.t164.pojo.ShopWh">
+            <id property="id" column="id"/>
+            <result property="whName" column="whName"/>
+        </association>
+        <association property="type" javaType="com.t164.pojo.Shoptype">
+            <id property="id" column="id"/>
+            <result property="shoptypeName" column="typeName"/>
+        </association>
+    </resultMap>
+    <select id="findbyPage" resultMap="shoptext">
+        SELECT shop.*,wh.`wh_name` as whName,`type`.`shoptype_name` as typeName FROM hsms_shop shop
+        LEFT JOIN shop_wh AS wh ON wh.`id`=shop.`shop_wh`
+        LEFT JOIN hsms_shopType AS `type`ON `type`.`id`=shop.`shop_type`
+        <where>
+               <if test="name!=null and name!=''">
+                   and (shop.shop_name  like concat('%',#{name},'%') or shop.id like  concat('%',#{name },'%'))
+               </if>
+               <if test="start!=-1 and start!=null">
+                   and shop.shop_state=#{start}
+               </if>
+               <if test="type!=0 and type!=null">
+                   and shop.shop_type=#{type}
+               </if>
+               <if test="wh!=0 and wh!=null">
+                   and shop.shop_wh=#{wh}
+               </if>
+           </where>
+              limit #{offset},#{limit}
+    </select>
+    <select id="getTotal" resultType="java.lang.Integer">
+        select count(1) from hsms_shop
+        <where>
+            <if test="name!=null and name!=''">
+                and (shop_name  like concat('%',#{name},'%') or id like  concat('%',#{name },'%'))
+            </if>
+            <if test="start!=-1 and start!=null">
+                and shop_state=#{start}
+            </if>
+            <if test="type!=0 and type!=null">
+                and shop_type=#{type}
+            </if>
+            <if test="wh!=0 and wh!=null">
+                and shop_wh=#{wh}
+            </if>
+        </where>
+    </select>
+    <insert id="add">
+       insert into hsms_shop(shop_tu, shop_name, shop_spec, shop_unit, shop_price, shop_rcp, shop_brand, shop_wh, shop_state, shop_type, create_id, shop_createTime, update_id, shop_lastupdate, iq_count, iq_now_count)
+       VALUES(#{shopTu},#{shopName},#{shopSpec},#{shopUnit},#{shopPrice},#{shopRcp},#{shopBrand},#{shopWh},#{shopState},#{shopType},#{createId},NOW(),#{updateId},NOW(),0,0)
+    </insert>
+    
+    <delete id="shopDel">
+        delete from hsms_shop where id in
+        <foreach collection="arry" open="(" close=")" separator="," item="id">
+            ${id}
+        </foreach>
+    </delete>
+    <update id="states">
+        update hsms_shop set shop_state=0  where id in
+        <foreach collection="arry" open="(" close=")" separator="," item="id">
+            ${id}
+        </foreach>
+    </update>
+    <update id="statex">
+    update hsms_shop set shop_state=1  where id in
+    <foreach collection="arry" open="(" close=")" separator="," item="id">
+        ${id}
+    </foreach>
+    </update>
+    <select id="selectdan" resultType="com.t164.pojo.Shop">
+        SELECT shop.*,wh.`wh_name` as whName,`type`.`shoptype_name` as typeName FROM hsms_shop shop
+        LEFT JOIN shop_wh AS wh ON wh.`id`=shop.`shop_wh`
+        LEFT JOIN hsms_shopType AS `type`ON `type`.`id`=shop.`shop_type`
+        where  id=#{id}
+    </select>
+</mapper>

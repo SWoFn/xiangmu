@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.t164.mapper.ShopwhMapper">
+    <select id="list" resultType="com.t164.pojo.ShopWh">
+        select * from shop_wh
+    </select>
+
+    <select id="findbyPage" resultType="com.t164.pojo.ShopWh">
+       SELECT wh.*,(SELECT COUNT(1) FROM hsms_shop WHERE wh.id=hsms_shop.shop_wh ) as count,(SELECT name FROM hr_admin WHERE wh.update_id=hr_admin.id) as name FROM shop_wh `wh`
+        limit #{offset},#{limit}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(1) from shop_wh
+    </select>
+    <delete id="whDel">
+        delete from shop_wh where id in
+        <foreach collection="arry" open="(" close=")" separator="," item="id">
+            ${id}
+        </foreach>
+    </delete>
+    <insert id="whadd">
+        insert  into shop_wh(wh_name,update_id,shop_lastupdate) values (#{shopWh.whName},#{shopWh.updateId},NOW())
+    </insert>
+
+    <update id="whupdate">
+        update shop_wh set wh_name=#{shopWh.whName},update_id=#{shopWh.updateId},shop_lastupdate=NOW() where id=#{shopWh.id}
+    </update>
+
+</mapper>

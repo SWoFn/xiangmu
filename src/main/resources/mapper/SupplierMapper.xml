@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.t164.mapper.SupplierMapper">
+    <select id="findByNameAndNum" resultType="com.t164.pojo.Supplier">
+        select * from hsms_supplier
+        <where>
+        <if test="Supplier.supplierName!=null and Supplier.supplierName!=''">
+            and  supplier_name  like concat('%',#{Supplier.supplierName},'%')
+        </if>
+        <if test="Supplier.supplierNum!=null and Supplier.supplierNum!=''">
+            and supplier_num like concat('%',#{Supplier.supplierNum},'%')
+        </if>
+        </where>
+    </select>
+    <insert id="add">
+        insert into hsms_supplier(supplier_num,supplier_name,supplier_phone,supplier_zuoji,supplier_contact,supplier_state,supplier_fax,supplier_address,supplier_note,supplier_creatTime)
+        values(#{supplierNum},#{supplierName},#{supplierPhone},#{supplierZuoji},#{supplierContact},#{supplierState},#{supplierFax},#{supplierAddress},#{supplierNote},#{supplierCreatTime})
+    </insert>
+    <delete id="batchDel">
+        delete from hsms_supplier where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            ${id}
+        </foreach>
+    </delete>
+    <update id="update">
+        update hsms_supplier set supplier_name=#{supplierName},supplier_phone=#{supplierPhone},supplier_zuoji=#{supplierZuoji},supplier_contact=#{supplierContact},supplier_state=#{supplierState},supplier_fax=#{supplierFax},supplier_address=#{supplierAddress},supplier_note=#{supplierNote} where id=#{id}
+    </update>
+    <delete id="del">
+        delete from hsms_supplier where id=#{id}
+    </delete>
+</mapper>

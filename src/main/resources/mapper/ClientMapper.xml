@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.t164.mapper.ClientMapper">
+    <select id="findNameAndNum" resultType="com.t164.pojo.Client">
+        select * from hsms_client
+        <where>
+        <if test="client.clientNum!=null and client.clientNum!=''">
+        and client_num like concat('%',#{client.clientNum},'%')
+        </if>
+        <if test="client.clientName!=null and client.clientName!=''">
+            and client_name like concat('%',#{client.clientName},'%')
+        </if>
+        </where>
+    </select>
+    <insert id="add">
+        insert into hsms_client(client_num,client_name,client_phone,client_contact,client_state) values
+        (#{clientNum},#{clientName},#{clientPhone},#{clientContact},#{clientState})
+    </insert>
+    <delete id="del">
+        delete from hsms_client where id=#{id}
+    </delete>
+    <delete id="batchDel">
+        delete from hsms_client where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            ${id}
+        </foreach>
+    </delete>
+    <update id="update">
+        update hsms_client set client_name=#{clientName},client_phone=#{clientPhone},client_contact=#{clientContact},client_state=#{clientState} where id=#{id}
+    </update>
+</mapper>
